@@ -16,6 +16,11 @@ const inventoryRoute = require("./routes/inventoryRoute");
 const app = express()
 const staticRoutes = require("./routes/static")
 
+const errorRoute = require("./routes/errorRoute")
+app.use("/error", errorRoute) // -> /error/cause
+
+
+
 /* ***********************
  * Middleware
  *************************/
@@ -37,7 +42,45 @@ app.use(staticRoutes)
 
 app.get("/", baseController.buildHome) // route for the home page
 app.use("/inv", inventoryRoute)
+const asyncHandler = require("./utilities/asyncHandler")
+app.get("/", asyncHandler(baseController.buildHome))
 
+
+const utilities = require("./utilities/")
+
+// 404 Not Found
+app.use(async (req, res, next) => {
+  const nav = await utilities.getNav()
+  res.status(404).render("errors/404", {
+    title: "404 Not Found",
+    nav,
+    message: "Sorry, we couldn't find that page.",
+     layout: "layouts/layout"
+  })
+})
+
+// 500 Error Handler (centralizado)
+app.use(async (err, req, res, next) => {
+  console.error("🔥 Unhandled error:", err.stack || err)
+
+  let nav = ""
+  try {
+    nav = await utilities.getNav() 
+  } catch (e) {
+    nav = '<ul class="error-page"><li><a href="/" title="Home.  page">Home</a></li></ul>'
+  }
+
+  if (res.headersSent) {
+    return next(err)
+  }
+
+  res.status(500).render("errors/500", {
+    title: "Server Error",
+    nav,
+    message: "Something went wrong on our side.",
+    layout: "layouts/layout" 
+  })
+})
 
 
 /* ***********************
@@ -53,3 +96,5 @@ const host = process.env.HOST || "localhost"
 app.listen(port, () => {
   console.log(`App listening on http://${host}:${port}`)
 })
+
+
