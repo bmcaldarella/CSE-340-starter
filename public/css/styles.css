@@ -585,3 +585,82 @@ body {
 .error-page .btn-home:hover {
   background: #1d4ed8;
 }
+
+
+
+
+/* ===== Account/Login Page ===== */
+    .title-login{
+        color: #fff;
+    }
+    .login-section{
+       
+        padding: 60px;
+        border-radius: 40px;
+        color: #fff;
+    }
+
+  .auth {
+    max-width: 420px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: rgb(45, 44, 55);
+    padding: 60px;
+    border-radius: 40px;
+    border: 1px solid #000000;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  .form-field {
+    display: grid;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+  
+  }
+
+  input{
+    padding: .6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: .5rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+  .btn {
+    padding: .6rem 1rem;
+    border: 0;
+    border-radius: .5rem;
+    cursor: pointer;
+  }
+  .btn.primary {
+    background: #222;
+    color: #fff;
+  }
+  .helper {
+    margin-top: 1rem;
+  }
+  .helper a{
+    color: #fefefea3;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .helper a:hover{
+    text-decoration: underline;
+    background-color: red;
+  }
+  .flash {
+    margin-bottom: 1rem;
+  } 
+
+  .link{
+    color:white;
+  }
+
+  .p-account{
+    color: white;
+  }
+
+  .pswds{
+    color: white;
+    font-size: smaller;
+  }

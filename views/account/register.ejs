@@ -1,0 +1,72 @@
+<!-- /views/account/register.ejs -->
+<main class="account auth">
+  <h1 class="title-login"><%= title %></h1>
+
+  <section class="flash">
+    <% if (errors) { %>
+      <ul class="notice">
+        <% errors.array().forEach(error => { %>
+          <li><%= error.msg %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <form id="registerForm" class="form auth-form" action="/account/register" method="post" novalidate>
+    <div class="form-field">
+      <label for="account_firstname">First name</label>
+      <input
+        id="account_firstname"
+        name="account_firstname"
+        type="text"
+        required
+        autocomplete="given-name"
+        value="<%= (typeof account_firstname !== 'undefined' ? account_firstname : '') %>">
+    </div>
+
+    <div class="form-field">
+      <label for="account_lastname">Last name</label>
+      <input
+        id="account_lastname"
+        name="account_lastname"
+        type="text"
+        required
+        autocomplete="family-name"
+        value="<%= (typeof account_lastname !== 'undefined' ? account_lastname : '') %>">
+    </div>
+
+    <div class="form-field">
+      <label for="account_email">Email</label>
+      <input
+        id="account_email"
+        name="account_email"
+        type="email"
+        required
+        autocomplete="email"
+        value="<%= (typeof account_email !== 'undefined' ? account_email : '') %>">
+    </div>
+
+    <div class="form-field">
+      <label for="accountPassword">Password:</label>
+      <span class="pswds">
+        Passwords must be at least <strong>12 characters</strong> and contain at least
+        <strong>1 number</strong>, <strong>1 capital letter</strong> and
+        <strong>1 special character</strong>.
+      </span>
+      <input
+        type="password"
+        name="account_password"
+        id="accountPassword"
+        required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+    </div>
+
+    <button type="submit" class="btn primary">Create account</button>
+  </form>
+
+  <p class="helper">
+    <hr>
+    <p class="p-account">Already have an account?</p>
+    <a href="/account/login" class="link">Sign in</a>
+  </p>
+</main>
