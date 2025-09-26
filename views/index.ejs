@@ -1,5 +1,10 @@
 <h1>Welcome to CSE Motors!</h1>
- <%- messages() %>
+<% if (notice && notice.length) { %>
+  <ul class="notice" role="alert" aria-live="polite">
+    <% notice.forEach(m => { %><li><%= m %></li><% }) %>
+  </ul>
+<% } %>
+
 
 <section class="hero">
  

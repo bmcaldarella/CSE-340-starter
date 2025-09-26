@@ -1,35 +1,26 @@
 // routes/accountRoute.js
-const express = require("express");
-const router = new express.Router();
+const express = require("express")
+const router = new express.Router()
 
-const utilities = require("../utilities");
-const accountController = require("../controllers/accountController");
-const regValidate = require("../utilities/account-validation");
+const utilities = require("../utilities")
+const accountController = require("../controllers/accountController")
+const regValidate = require("../utilities/account-validation")
 
 // GET /account/login
-router.get(
-  "/login",
-  utilities.handleErrors(accountController.buildLogin)
-);
+router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
 // GET /account/register
-router.get(
-  "/register",
-  utilities.handleErrors(accountController.buildRegister)
-);
+router.get("/register", utilities.handleErrors(accountController.buildRegister))
 
-// POST /account/register  -> reglas -> check -> controlador
+// POST /account/register
 router.post(
   "/register",
   regValidate.registrationRules(),
   regValidate.checkRegData,
   utilities.handleErrors(accountController.registerAccount)
-);
+)
 
-router.post(
-  "/login",
-  utilities.handleErrors(accountController.processLogin)
-);
+// POST /account/login
+router.post("/login", utilities.handleErrors(accountController.processLogin))
 
-
-module.exports = router;
+module.exports = router

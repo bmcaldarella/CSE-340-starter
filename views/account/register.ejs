@@ -3,6 +3,12 @@
   <h1 class="title-login"><%= title %></h1>
 
   <section class="flash">
+    <% if (notice && notice.length) { %>
+      <ul class="notice" role="alert" aria-live="polite">
+        <% notice.forEach(m => { %><li><%= m %></li><% }) %>
+      </ul>
+    <% } %>
+
     <% if (errors) { %>
       <ul class="notice">
         <% errors.array().forEach(error => { %>
@@ -11,7 +17,6 @@
       </ul>
     <% } %>
   </section>
-
   <form id="registerForm" class="form auth-form" action="/account/register" method="post" novalidate>
     <div class="form-field">
       <label for="account_firstname">First name</label>

@@ -1,125 +1,149 @@
 /* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
+ * Primary server file: controls the project
+ * CSE 340 — Inventory A4
+ 
  *******************************************/
+
+require("dotenv").config()
 
 /* ***********************
  * Require Statements
  *************************/
-const session = require("express-session")
-const pool = require('./database/')
 const path = require("path")
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
-require("dotenv").config()
+const session = require("express-session")
+const flash = require("connect-flash")
+const pgSession = require("connect-pg-simple")(session)
+
+const pool = require("./database/") 
+const utilities = require("./utilities/")
+
+// Controllers & Routes
+const asyncHandler = require("./utilities/asyncHandler")
 const baseController = require("./controllers/baseController")
-const inventoryRoute = require("./routes/inventoryRoute")
-
-const app = express()
 const staticRoutes = require("./routes/static")
-
 const errorRoute = require("./routes/errorRoute")
 const accountRoute = require("./routes/accountRoute")
-// ❌ const bodyParser = require("body-parser")  // <-- QUITADO
+const inventoryRoute = require("./routes/inventoryRoute")
 
 /* ***********************
- * Middleware
+ * App
  *************************/
-// Serve static files from the "public" directory
+const app = express()
+
+/* ***********************
+ * Trust proxy (solo prod)
+ 
+ *************************/
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1)
+}
+
+/* ***********************
+ * Static files
+ *************************/
 app.use(express.static(path.join(__dirname, "public")))
 
-// Body parsers (útiles para formularios y JSON)
-// ✅ Deja SOLO los parsers nativos de Express
-app.use(express.urlencoded({ extended: false }))
+/* ***********************
+ * Body parsers
+ *************************/
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 /* ***********************
  * View Engine and Layouts
  *************************/
-app.set("views", path.join(__dirname, "views")) // root of all views
+app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs")
 app.use(expressLayouts)
-app.set("layout", "layouts/layout") // relative to /views
+app.set("layout", "layouts/layout")
 
 /* ***********************
- * Middleware
- * ************************/
-app.use(session({
-  store: new (require('connect-pg-simple')(session))({
-    createTableIfMissing: true,
-    pool,
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,            // recomendado
-  saveUninitialized: false, // recomendado
-  name: 'sessionId',
-}))
+ * Session + Flash
+ * 
+ *************************/
+app.use(
+  session({
+    store: new pgSession({
+      pool,
+      createTableIfMissing: true, 
+    }),
+    secret: process.env.SESSION_SECRET || "dev-secret-change-me",
+    resave: false,
+    saveUninitialized: false,
+    name: "sessionId",
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 2, 
+    },
+  })
+)
 
-// Express Messages Middleware
-app.use(require('connect-flash')())
-app.use(function(req, res, next){
-  res.locals.messages = require('express-messages')(req, res)
+app.use(flash())
+
+/* ***********************
+ * Flash → res.locals
+ *************************/
+app.use((req, res, next) => {
+  const msgs = req.flash("notice") || []
+  res.locals.messages = msgs
+  res.locals.notice = msgs
   next()
 })
 
 /* ***********************
  * Routes
  *************************/
-app.use("/error", errorRoute) // -> /error/cause
-app.use(staticRoutes)
-app.use("/inv", inventoryRoute)
-
-app.use("/account", require("./routes/accountRoute"))
-
-const asyncHandler = require("./utilities/asyncHandler")
+// Home
 app.get("/", asyncHandler(baseController.buildHome))
 
-const utilities = require("./utilities/")
+// Auxiliares
+app.use("/error", errorRoute)
+app.use(staticRoutes)
+app.use("/account", accountRoute)
+app.use("/inv", inventoryRoute)
 
-// 404 Not Found
+/* ***********************
+ * 404 Not Found
+ *************************/
 app.use(async (req, res, next) => {
   const nav = await utilities.getNav()
   res.status(404).render("errors/404", {
     title: "404 Not Found",
     nav,
     message: "Sorry, we couldn't find that page.",
-    layout: "layouts/layout"
+    layout: "layouts/layout",
   })
 })
 
-// 500 Error Handler (centralizado)
+/* ***********************
+ * 500 Error Handler (Global)
+ *************************/
 app.use(async (err, req, res, next) => {
   console.error("🔥 Unhandled error:", err.stack || err)
-
   let nav = ""
   try {
-    nav = await utilities.getNav() 
-  } catch (e) {
-    nav = '<ul class="error-page"><li><a href="/" title="Home.  page">Home</a></li></ul>'
+    nav = await utilities.getNav()
+  } catch {
+    nav = '<ul class="error-page"><li><a href="/" title="Home page">Home</a></li></ul>'
   }
-
-  if (res.headersSent) {
-    return next(err)
-  }
-
+  if (res.headersSent) return next(err)
   res.status(500).render("errors/500", {
     title: "Server Error",
     nav,
     message: "Something went wrong on our side.",
-    layout: "layouts/layout" 
+    layout: "layouts/layout",
   })
 })
 
 /* ***********************
- * Local Server Information
- * Values from .env (environment) file
+ * Start Server
  *************************/
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5500
 const host = process.env.HOST || "localhost"
 
-/* ***********************
- * Log statement to confirm server operation
- *************************/
 app.listen(port, () => {
   console.log(`App listening on http://${host}:${port}`)
 })

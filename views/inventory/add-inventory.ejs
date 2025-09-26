@@ -1,0 +1,64 @@
+<main>
+  <section class="form-addClassification">
+    <h1>
+      <%= title %>
+    </h1>
+
+    <% if (errors) { %>
+      <ul class="notice">
+        <% errors.array().forEach(err=> { %><li>
+            <%= err.msg %>
+          </li>
+          <% }) %>
+      </ul>
+      <% } %>
+
+        <% if (messages && messages.length) { %>
+          <ul class="notice">
+            <% messages.forEach(m=> { %><li>
+                <%= m %>
+              </li>
+              <% }) %>
+          </ul>
+          <% } %>
+
+            <form action="/inv/add-inventory" method="post" novalidate>
+              <label for="inv_make">Make</label>
+              <input id="inv_make" name="inv_make" type="text" required value="<%= inv_make %>">
+
+              <label for="inv_model">Model</label>
+              <input id="inv_model" name="inv_model" type="text" required value="<%= inv_model %>">
+
+              <label for="inv_year">Year</label>
+              <input id="inv_year" name="inv_year" type="number" required min="1900" max="2100" value="<%= inv_year %>">
+
+              <label for="inv_description">Description</label>
+              <br>
+              <textarea class="textarea-responsive" id="inv_description" name="inv_description"
+                required><%= inv_description %></textarea>
+              <br>
+
+              <label for="inv_image">Image Path</label>
+              <input id="inv_image" name="inv_image" type="text" required value="<%= inv_image %>">
+
+              <label for="inv_thumbnail">Thumbnail Path</label>
+              <input id="inv_thumbnail" name="inv_thumbnail" type="text" required value="<%= inv_thumbnail %>">
+
+              <label for="inv_price">Price</label>
+              <input id="inv_price" name="inv_price" type="number" required min="1" step="0.01"
+                value="<%= inv_price %>">
+
+              <label for="inv_miles">Miles</label>
+              <input id="inv_miles" name="inv_miles" type="number" required min="0" step="1" value="<%= inv_miles %>">
+
+              <label for="inv_color">Color</label>
+              <input id="inv_color" name="inv_color" type="text" required value="<%= inv_color %>">
+
+              <label for="classificationList">Classification</label>
+              <br>
+              <%- classificationSelect %>
+                <br>
+                <button class="btn-addClassification btn primary" type="submit">Save</button>
+            </form>
+  </section>
+</main>
