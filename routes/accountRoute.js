@@ -59,7 +59,14 @@ router.post(
   utilities.handleErrors(accountController.updatePassword)
 )
 
-// --- Logout (Task 6)
-router.get("/logout", utilities.handleErrors(accountController.logout))
+router.get(
+  "/login",
+  (req, res, next) => {
+    if (res.locals.loggedin) return res.redirect("/account")
+    next()
+  },
+  utilities.handleErrors(accountController.buildLogin)
+)
 
+router.get("/logout", utilities.handleErrors(accountController.logout))
 module.exports = router

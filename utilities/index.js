@@ -6,12 +6,12 @@ require("dotenv").config()
 const Util = {}
 
 /* ************************
- * Constructs the nav HTML unordered list
+ * Build the nav UL
  ************************** */
 Util.getNav = async function () {
   const data = await invModel.getClassifications() 
   const list = [
-    '<ul>',
+    "<ul>",
     '<li><a href="/" title="Home page">Home</a></li>',
     ...data.map(
       (row) =>
@@ -23,7 +23,7 @@ Util.getNav = async function () {
 }
 
 /* **************************************
- * Build the classification view HTML
+ * Build classification grid HTML
  * ************************************ */
 Util.buildClassificationGrid = async function (data) {
   if (Array.isArray(data) && data.length > 0) {
@@ -52,7 +52,7 @@ Util.buildClassificationGrid = async function (data) {
 }
 
 /* **************************************
- * Build the single vehicle detail HTML
+ * Build single item detail HTML
  * ************************************ */
 Util.buildItemDetail = async function (vehicle) {
   const fmtUSD = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
@@ -83,10 +83,10 @@ Util.buildItemDetail = async function (vehicle) {
 }
 
 /* **************************************
- * Build classification <select> for Add Inventory form
+ * Build classification <select>
  * ************************************ */
 Util.buildClassificationList = async function (classification_id = null) {
-  const data = await invModel.getClassifications() // ← array
+  const data = await invModel.getClassifications() 
   const options =
     `<option value=''>Choose a Classification</option>` +
     data
@@ -99,32 +99,40 @@ Util.buildClassificationList = async function (classification_id = null) {
 }
 
 /* **************************************
- * Express async error handler wrapper
+ * Async error wrapper
  * ************************************ */
-Util.handleErrors = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+Util.handleErrors = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
 
 /* ****************************************
- * Middleware to check token validity
+ * JWT check:
  **************************************** */
 Util.checkJWTToken = (req, res, next) => {
-  if (req.cookies?.jwt) {
-    jwt.verify(req.cookies.jwt, process.env.ACCESS_TOKEN_SECRET, function (err, accountData) {
-      if (err) {
-        req.flash("notice", "Please log in.") 
-        res.clearCookie("jwt")
-        return res.redirect("/account/login")
-      }
-      res.locals.accountData = accountData
-      res.locals.loggedin = 1
-      next()
-    })
-  } else {
+  res.locals.loggedin = 0
+  res.locals.accountData = null
+
+  const token = req.cookies?.jwt
+  if (!token) return next()
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, accountData) => {
+    if (err) {
+      const isProd = process.env.NODE_ENV === "production"
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+      })
+      return next()
+    }
+    res.locals.accountData = accountData
+    res.locals.loggedin = 1
     next()
-  }
+  })
 }
 
 /* ****************************************
- *  Check Login
+ *  Require login
  * ************************************ */
 Util.checkLogin = (req, res, next) => {
   if (res.locals.loggedin) return next()
@@ -132,14 +140,13 @@ Util.checkLogin = (req, res, next) => {
   return res.redirect("/account/login")
 }
 
+/* ****************************************
+ *  Require Employee/Admin 
+ * ************************************ */
 Util.requireEmployeeOrAdmin = async (req, res, next) => {
   try {
     const u = res.locals.accountData
-    const ok =
-      res.locals.loggedin &&
-      u &&
-      (u.account_type === "Employee" || u.account_type === "Admin")
-
+    const ok = res.locals.loggedin && u && (u.account_type === "Employee" || u.account_type === "Admin")
     if (ok) return next()
 
     req.flash("notice", "You must be logged in as Employee or Admin to access that area.")
@@ -153,6 +160,5 @@ Util.requireEmployeeOrAdmin = async (req, res, next) => {
     next(err)
   }
 }
-
 
 module.exports = Util

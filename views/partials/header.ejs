@@ -2,7 +2,9 @@
   <div class="container header-bar">
     <a class="brand" href="/" title="Home">CSE Motors</a>
 
+    <!-- Main navigation comes from server as HTML -->
 
+    <!-- Right-side user area -->
     <ul class="user-links">
       <%
         // Values provided by utilities.checkJWTToken middleware
@@ -18,10 +20,10 @@
       <% if (isLoggedIn) { %>
         <!-- Visible ONLY when logged in -->
         <li>
-  <h2 class="user-login"><%= acct.account_firstname || "User" %></h2>
+  <h2 class="user-login">Welcome <%= acct.account_firstname || "User" %></h2>
         </li>
         <li>
-          <a href="/account/login">Logout</a>
+          <a href="/account/logout">Logout</a>
         </li>
       <% } else { %>
         <!-- Visible ONLY when NOT logged in -->
