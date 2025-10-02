@@ -1,4 +1,4 @@
-<main>
+<main class="container">
   <h1><%= title %></h1>
 
   <% if (messages && messages.length) { %>
@@ -11,4 +11,24 @@
     <li><a href="/inv/add-classification">Add New Classification</a></li>
     <li><a href="/inv/add-inventory">Add New Inventory</a></li>
   </ul>
+
+  <h2>Manage Inventory</h2>
+  <p>Select a classification from the list to see its vehicles.</p>
+
+  <form class="filter">
+    <label for="classification_id">Classification</label>
+    <%- classificationSelect %>
+  </form>
+
+  <table id="inventoryDisplay"></table>
+
+  <noscript>JavaScript must be enabled to use this page.</noscript>
+
+  <% if (typeof errors !== 'undefined' && errors && errors.length) { %>
+    <ul class="errors">
+      <% errors.forEach(e => { %><li><%= e.msg || e %></li><% }) %>
+    </ul>
+  <% } %>
+
+  <script src="/js/inventory.js" defer></script>
 </main>

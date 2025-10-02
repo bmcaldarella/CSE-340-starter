@@ -1,10 +1,34 @@
-<header id="top-header">
-  <link rel="stylesheet" href="/css/styles.css" media="screen" />
+<header id="top" class="site-header">
+  <div class="container header-bar">
+    <a class="brand" href="/" title="Home">CSE Motors</a>
 
-  <h1 class="siteName">
-    <a href="/" class="title" title="Return to home page">CSE Motors</a>
-  </h1>
-  <div id="tools">
-<a class="links" href="/account/login" title="Mi cuenta">My account</a>
+
+    <ul class="user-links">
+      <%
+        // Values provided by utilities.checkJWTToken middleware
+        const isLoggedIn = typeof loggedin !== 'undefined' && !!loggedin;
+        const acct = (typeof accountData !== 'undefined' && accountData) ? accountData : null;
+
+        // Label to the LEFT of the auth link when logged in (as the task requests)
+        // Defaults to 'Basic' if you don't have account_type/firstname.
+        const welcomeLabel =
+          (acct && (acct.account_type || acct.account_firstname)) || 'Basic';
+      %>
+
+      <% if (isLoggedIn) { %>
+        <!-- Visible ONLY when logged in -->
+        <li>
+  <h2 class="user-login"><%= acct.account_firstname || "User" %></h2>
+        </li>
+        <li>
+          <a href="/account/login">Logout</a>
+        </li>
+      <% } else { %>
+        <!-- Visible ONLY when NOT logged in -->
+        <li>
+          <a href="/account/login">My Account</a>
+        </li>
+      <% } %>
+    </ul>
   </div>
 </header>

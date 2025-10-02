@@ -1,0 +1,43 @@
+<%- include('../partials/header.ejs') %>
+
+<main id="main" class="container">
+  <h1><%= title %></h1>
+  <p><strong>Confirm Deletion</strong> — This action is <em>permanent</em> and cannot be undone.</p>
+
+  <% if (locals.errors && errors.length) { %>
+    <div class="errors">
+      <% errors.forEach(err => { %><p><%= err.msg %></p><% }) %>
+    </div>
+  <% } %>
+
+  <form action="/inv/delete" method="post">
+    <input type="hidden" name="inv_id" value="<%= inv_id %>">
+
+    <div class="form-row">
+      <label for="inv_make">Make</label>
+      <input id="inv_make" name="inv_make" value="<%= inv_make %>" readonly>
+    </div>
+
+    <div class="form-row">
+      <label for="inv_model">Model</label>
+      <input id="inv_model" name="inv_model" value="<%= inv_model %>" readonly>
+    </div>
+
+    <div class="form-row">
+      <label for="inv_year">Year</label>
+      <input id="inv_year" name="inv_year" value="<%= inv_year %>" readonly>
+    </div>
+
+    <div class="form-row">
+      <label for="inv_price">Price</label>
+      <input id="inv_price" name="inv_price" value="<%= inv_price %>" readonly>
+    </div>
+
+    <div class="actions" style="display:flex; gap:.5rem; margin-top:1rem;">
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a class="btn btn-outline" href="/inv">Cancel</a>
+    </div>
+  </form>
+</main>
+
+<%- include('../partials/footer.ejs') %>

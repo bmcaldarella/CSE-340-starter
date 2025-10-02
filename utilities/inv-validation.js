@@ -40,7 +40,7 @@ invValidate.inventoryRules = () => [
   body("classification_id").trim().isInt({ gt: 0 }).withMessage("Choose a classification."),
 ]
 
-/* ===== Check inventory ===== */
+/* ===== Check inventory for ADD ===== */
 invValidate.checkInventoryData = async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -51,7 +51,50 @@ invValidate.checkInventoryData = async (req, res, next) => {
       nav,
       errors,
       classificationSelect,
-      ...req.body, // sticky
+      ...req.body, 
+    })
+  }
+  next()
+}
+
+/* **********************************
+ *  Check data and return errors for UPDATE inventory
+ * ********************************** */
+invValidate.checkUpdateData = async (req, res, next) => {
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_miles,
+    inv_color,
+    classification_id,
+  } = req.body
+
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    const nav = await Utilities.getNav()
+    const classificationSelect = await Utilities.buildClassificationList(classification_id)
+    return res.status(400).render("inventory/edit-inventory", {
+      title: `Edit ${inv_make} ${inv_model}`,
+      nav,
+      errors,
+      classificationSelect,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id,
     })
   }
   next()

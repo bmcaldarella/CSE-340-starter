@@ -1,0 +1,93 @@
+<main class="container">
+  <h1><%= title || "Update Account" %></h1>
+
+  <% if (messages && messages.length) { %>
+    <div class="notice" role="status" aria-live="polite"><%= messages.join("<br>") %></div>
+  <% } %>
+
+  <% if (errors && errors.length) { %>
+    <div class="error-summary" role="alert" aria-live="assertive">
+      <ul>
+        <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <!-- ========= Account Update ========= -->
+  <section class="card">
+    <h2>Account Update</h2>
+    <form action="/account/update" method="post" class="form">
+      <input type="hidden" name="account_id" value="<%= account.account_id %>" />
+
+      <div class="form-row">
+        <label for="account_firstname">First Name</label>
+        <input
+          id="account_firstname"
+          name="account_firstname"
+          required
+          minlength="2"
+          autocomplete="given-name"
+          value="<%= account.account_firstname || '' %>"
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="account_lastname">Last Name</label>
+        <input
+          id="account_lastname"
+          name="account_lastname"
+          required
+          minlength="2"
+          autocomplete="family-name"
+          value="<%= account.account_lastname || '' %>"
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="account_email">Email</label>
+        <input
+          id="account_email"
+          name="account_email"
+          type="email"
+          required
+          autocomplete="email"
+          value="<%= account.account_email || '' %>"
+        />
+      </div>
+
+      <button type="submit">Save changes</button>
+    </form>
+  </section>
+
+  <!-- ========= Change Password ========= -->
+  <section class="card">
+    <h2>Change Password</h2>
+    <p class="help">
+      Enter a new password to replace your current one. Requirements:
+      <strong>12+ chars</strong>, at least one uppercase, one lowercase, one number, and one special character.
+    </p>
+
+    <form action="/account/update-password" method="post" class="form">
+      <input type="hidden" name="account_id" value="<%= account.account_id %>" />
+
+      <div class="form-row">
+        <label for="account_password">New Password</label>
+        <input
+          id="account_password"
+          name="account_password"
+          type="password"
+          required
+          minlength="12"
+          autocomplete="new-password"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}$"
+          aria-describedby="pwd-help"
+        />
+        <small id="pwd-help" class="hint">
+          Must be 12+ characters and include upper & lower case, a number, and a special character.
+        </small>
+      </div>
+
+      <button type="submit">Update password</button>
+    </form>
+  </section>
+</main>

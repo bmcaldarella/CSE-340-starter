@@ -1,0 +1,89 @@
+<main class="container">
+  <h1><%= title %></h1>
+
+  <% if (messages && messages.length) { %>
+    <ul class="notice">
+      <% messages.forEach(m => { %><li><%= m %></li><% }) %>
+    </ul>
+  <% } %>
+
+  <% if (typeof errors !== "undefined" && errors && errors.length) { %>
+    <ul class="errors">
+      <% errors.forEach(e => { %><li><%= e.msg || e %></li><% }) %>
+    </ul>
+  <% } %>
+
+  <p>
+    Use the form below to <strong>edit</strong> the vehicle information.
+    When you finish, click “Update Vehicle”.
+  </p>
+
+  <form id="updateForm" action="/inv/update" method="post" novalidate class="form-grid">
+    <input type="hidden" name="inv_id" value="<%= typeof inv_id !== 'undefined' ? inv_id : '' %>">
+
+    <div class="form-field">
+      <label for="classification_id">Classification</label>
+      <%- classificationSelect %>
+    </div>
+
+    <div class="form-field">
+      <label for="inv_make">Make</label>
+      <input id="inv_make" name="inv_make" type="text" required
+             value="<%= typeof inv_make !== 'undefined' ? inv_make : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_model">Model</label>
+      <input id="inv_model" name="inv_model" type="text" required
+             value="<%= typeof inv_model !== 'undefined' ? inv_model : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_year">Year</label>
+      <input id="inv_year" name="inv_year" type="number" min="1900" max="2100" required
+             value="<%= typeof inv_year !== 'undefined' ? inv_year : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_price">Price</label>
+      <input id="inv_price" name="inv_price" type="number" step="0.01" min="0" required
+             value="<%= typeof inv_price !== 'undefined' ? inv_price : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_miles">Miles</label>
+      <input id="inv_miles" name="inv_miles" type="number" min="0"
+             value="<%= typeof inv_miles !== 'undefined' ? inv_miles : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_color">Color</label>
+      <input id="inv_color" name="inv_color" type="text"
+             value="<%= typeof inv_color !== 'undefined' ? inv_color : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_image">Image URL</label>
+      <input id="inv_image" name="inv_image" type="text"
+             value="<%= typeof inv_image !== 'undefined' ? inv_image : '' %>">
+    </div>
+
+    <div class="form-field">
+      <label for="inv_thumbnail">Thumbnail URL</label>
+      <input id="inv_thumbnail" name="inv_thumbnail" type="text"
+             value="<%= typeof inv_thumbnail !== 'undefined' ? inv_thumbnail : '' %>">
+    </div>
+
+    <div class="form-field full">
+      <label for="inv_description">Description</label>
+      <textarea id="inv_description" name="inv_description" rows="5"><%= typeof inv_description !== 'undefined' ? inv_description : '' %></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" id="updateBtn" disabled>Update Vehicle</button>
+      <a class="btn-secondary" href="/inv/">Cancel</a>
+    </div>
+  </form>
+
+  <script src="/js/inv-update.js" defer></script>
+</main>

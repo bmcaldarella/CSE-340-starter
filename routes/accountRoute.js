@@ -6,13 +6,18 @@ const utilities = require("../utilities")
 const accountController = require("../controllers/accountController")
 const regValidate = require("../utilities/account-validation")
 
-// GET /account/login
-router.get("/login", utilities.handleErrors(accountController.buildLogin))
-
-// GET /account/register
+// --- Auth views
+router.get("/login",    utilities.handleErrors(accountController.buildLogin))
 router.get("/register", utilities.handleErrors(accountController.buildRegister))
 
-// POST /account/register
+// --- Account management (protected)
+router.get(
+  "/",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildAccountManagement)
+)
+
+// --- Registration
 router.post(
   "/register",
   regValidate.registrationRules(),
@@ -20,7 +25,41 @@ router.post(
   utilities.handleErrors(accountController.registerAccount)
 )
 
-// POST /account/login
-router.post("/login", utilities.handleErrors(accountController.processLogin))
+// --- Login
+router.post(
+  "/login",
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  utilities.handleErrors(accountController.accountLogin)
+)
+
+// --- Update Account (Task 4–5)
+// Form view
+router.get(
+  "/update/:accountId",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildUpdateAccount)
+)
+
+// Update names/email (with server-side validation)
+router.post(
+  "/update",
+  utilities.checkLogin,
+  regValidate.updateAccountRules(),     
+  regValidate.checkUpdateAccountData,   
+  utilities.handleErrors(accountController.updateAccount)
+)
+
+// Update password (separate form, with validation)
+router.post(
+  "/update-password",
+  utilities.checkLogin,
+  regValidate.updatePasswordRules(),    
+  regValidate.checkUpdatePasswordData,  
+  utilities.handleErrors(accountController.updatePassword)
+)
+
+// --- Logout (Task 6)
+router.get("/logout", utilities.handleErrors(accountController.logout))
 
 module.exports = router

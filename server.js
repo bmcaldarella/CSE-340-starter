@@ -1,7 +1,6 @@
 /* ******************************************
  * Primary server file: controls the project
  * CSE 340 — Inventory A4
- 
  *******************************************/
 
 require("dotenv").config()
@@ -15,6 +14,7 @@ const expressLayouts = require("express-ejs-layouts")
 const session = require("express-session")
 const flash = require("connect-flash")
 const pgSession = require("connect-pg-simple")(session)
+const cookieParser = require("cookie-parser")
 
 const pool = require("./database/") 
 const utilities = require("./utilities/")
@@ -34,7 +34,6 @@ const app = express()
 
 /* ***********************
  * Trust proxy (solo prod)
- 
  *************************/
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1)
@@ -52,6 +51,11 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 /* ***********************
+ * Cookie Parser (antes de JWT/session)
+ *************************/
+app.use(cookieParser())
+
+/* ***********************
  * View Engine and Layouts
  *************************/
 app.set("views", path.join(__dirname, "views"))
@@ -61,7 +65,6 @@ app.set("layout", "layouts/layout")
 
 /* ***********************
  * Session + Flash
- * 
  *************************/
 app.use(
   session({
@@ -76,7 +79,8 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 2, 
+      maxAge: 1000 * 60 * 60 * 2, // 2 horas
+      secure: process.env.NODE_ENV === "production", // solo secure en prod
     },
   })
 )
@@ -92,6 +96,11 @@ app.use((req, res, next) => {
   res.locals.notice = msgs
   next()
 })
+
+/* ***********************
+ * JWT Middleware
+ *************************/
+app.use(utilities.checkJWTToken)
 
 /* ***********************
  * Routes
