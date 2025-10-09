@@ -1,7 +1,63 @@
+<% /* ===============================
+     Inventory Detail Page
+     =============================== */ %>
+
 <% if (title) { %>
-<h1><%= title %></h1>
+  <h1><%= title %></h1>
 <% } else { res.redirect('/') } %>
 
-<%# messages() %>
+<%# Mensajes flash si usas connect-flash %>
+<% if (messages && messages.length > 0) { %>
+  <ul class="notice">
+    <% messages.forEach(msg => { %>
+      <li><%= msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
 
+<% /* ===============================
+     FAVORITE BUTTON ⭐ (solo si hay vehículo)
+     =============================== */ %>
+<% if (vehicle) { %>
+  <div class="favorite-section">
+    <% if (isFavorite) { %>
+      <form action="/favorites/<%= vehicle.inv_id %>/remove" method="post" class="fav-form">
+        <button type="submit" aria-label="Remove from favorites">⭐ Remove from Favorites</button>
+      </form>
+    <% } else { %>
+      <form action="/favorites/<%= vehicle.inv_id %>" method="post" class="fav-form">
+        <button type="submit" aria-label="Add to favorites">⭐ Add to Favorites</button>
+      </form>
+    <% } %>
+  </div>
+<% } %>
+
+<% /* ===============================
+     ITEM DETAILS
+     =============================== */ %>
 <%- itemDetail %>
+
+<style>
+/* ===============================
+   Inline styles — puedes moverlos a tu CSS global
+   =============================== */
+.favorite-section {
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.fav-form button {
+  background-color: #121214;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .3s ease, transform .1s ease;
+}
+
+.fav-form button:hover {
+  background-color: #1d1d1f;
+  transform: translateY(-1px);
+}
+</style>

@@ -1,3 +1,11 @@
-<nav aria-label="Primary">
-<%- nav %>
+<nav class="site-nav-wrap">
+  <div class="left">
+    <%- nav %>
+  </div>
+  <div class="right">
+    <% if (account) { %>
+      <a class="fav-link" href="/favorites">⭐ My Favorites</a>
+    <% } %>
+  </div>
 </nav>
+

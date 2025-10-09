@@ -1,0 +1,33 @@
+<main class="container">
+    <h1>My Favorites</h1>
+
+    <% if (!items || items.length===0) { %>
+        <p>No favorites yet. Go add some ⭐ from any vehicle page.</p>
+        <% } else { %>
+            <ul class="fav-list">
+                <% items.forEach(v=> { %>
+                    <li class="fav-card">
+                        <a href="/inv/detail/<%= v.inv_id %>">
+                            <img src="<%= v.inv_image %>" alt="<%= v.inv_make %> <%= v.inv_model %>" class="fav-img">
+                            <h2>
+                                <%= v.inv_year %>
+                                    <%= v.inv_make %>
+                                        <%= v.inv_model %>
+                            </h2>
+                        </a>
+                        <p>Class: <%= v.classification_name %>
+                        </p>
+                        <p>Color: <%= v.inv_color %>
+                        </p>
+                        <p>Price: $<%= v.inv_price.toLocaleString() %>
+                        </p>
+                        <form action="/favorites/<%= v.inv_id %>/remove" method="post">
+                            <button class="remove" type="submit">Remove ❌</button>
+                        </form>
+                    </li>
+                    <% }) %>
+            </ul>
+            <% } %>
+</main>
+
+

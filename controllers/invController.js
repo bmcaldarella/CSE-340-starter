@@ -1,7 +1,7 @@
 // controllers/invController.js
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities")
-
+const favModel = require("../models/favorite-model")
 const invCont = {}
 
 /* =========================
@@ -175,12 +175,29 @@ invCont.buildByInvId = async function (req, res, next) {
         title: "Vehicle not found",
         nav,
         itemDetail: '<p class="notice">Sorry, that vehicle was not found.</p>',
+        vehicle: null,
+        isFavorite: false
       })
     }
 
+    // ⚡ Mantén tu HTML actual para specs/galería
     const itemDetail = await utilities.buildItemDetail(vehicle)
+
+    // ⭐ NUEVO: calcula si es favorito (solo si está logueado)
+    let isFavorite = false
+    const account = req.session?.account
+    if (account) {
+      isFavorite = await favModel.isFavorite(account.account_id, vehicle.inv_id)
+    }
+
     const title = `${vehicle.inv_make} ${vehicle.inv_model}`
-    res.render("inventory/detail", { title, nav, itemDetail })
+    return res.render("inventory/detail", {
+      title,
+      nav,
+      itemDetail, // tu HTML existente
+      vehicle,    // 👈 necesario para los forms del botón
+      isFavorite  // 👈 flag para pintar Add/Remove
+    })
   } catch (err) {
     next(err)
   }

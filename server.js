@@ -26,6 +26,8 @@ const staticRoutes = require("./routes/static")
 const errorRoute = require("./routes/errorRoute")
 const accountRoute = require("./routes/accountRoute")
 const inventoryRoute = require("./routes/inventoryRoute")
+const favoriteRoute = require("./routes/favoriteRoute")
+
 
 /* ***********************
  * App
@@ -79,13 +81,21 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 2, // 2 horas
-      secure: process.env.NODE_ENV === "production", // solo secure en prod
+      maxAge: 1000 * 60 * 60 * 2,
+      secure: process.env.NODE_ENV === "production", 
     },
   })
 )
 
 app.use(flash())
+
+
+app.use((req, res, next) => {
+  res.locals.account = req.session?.account || null
+  res.locals.req = req
+  next()
+})
+
 
 /* ***********************
  * Flash → res.locals
@@ -113,7 +123,7 @@ app.use("/error", errorRoute)
 app.use(staticRoutes)
 app.use("/account", accountRoute)
 app.use("/inv", inventoryRoute)
-
+app.use("/favorites", favoriteRoute)
 /* ***********************
  * 404 Not Found
  *************************/
